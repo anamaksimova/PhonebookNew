@@ -200,7 +200,13 @@ const data = [
     phoneLink.textContent = phone;
     tdPhone.append(phoneLink);
     tr.phoneLink = phoneLink;
-    tr.append(tdDel, tdName, tdSurname, tdPhone);
+
+    const tdEdit = document.createElement('td');
+    const buttonEdit = document.createElement('button');
+    buttonEdit.classList.add('btn', 'btn-primary');
+    buttonEdit.textContent = 'Редактировать';
+    tdEdit.append(buttonEdit);
+    tr.append(tdDel, tdName, tdSurname, tdPhone, tdEdit);
     return tr;
   };
 
