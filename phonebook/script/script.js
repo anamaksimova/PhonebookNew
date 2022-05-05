@@ -1,23 +1,7 @@
-
 import {renederPhoneBook, renderContacts} from './modules/render.js';
 import serviceStorage from './modules/serviceStorage.js';
-const {
-  getStorage,
-setStorage,
-removeStorage} = serviceStorage;
+const {getStorage} = serviceStorage;
 
-import * as createElements from './modules/createElements.js';
-const {
-  createContainer,
-createHeader,
-createLogo,
-createMain,
-createButtonsGroup,
-createTable,
-createForm,
-createFooter,
-createRow,
-} = createElements;
 import control from './modules/control.js';
 const {
   modalControl,
