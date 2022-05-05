@@ -1,28 +1,5 @@
 'use strict';
-let data = [];
-const data1 = [
-  {
-    name: 'Иван',
-    surname: 'Петров',
-    phone: '+79514545454',
-  },
-  {
-    name: 'Игорь',
-    surname: 'Семёнов',
-    phone: '+79999999999',
-  },
-  {
-    name: 'Семён',
-    surname: 'Иванов',
-    phone: '+79800252525',
-  },
-  {
-    name: 'Мария',
-    surname: 'Попова',
-    phone: '+79876543210',
-  },
-];
-
+const data = [];
 {
   const addContactData = contact => {
     data.push(contact);
@@ -83,13 +60,13 @@ const data1 = [
 
     const thead = document.createElement('thead');
     thead.insertAdjacentHTML('beforeend', `
-<tr>
-<th class = "delete">Удалить</th>
-<th>Имя</th>
-<th>Фамилия</th>
-<th>Телефон</th>
-</tr>
-`);
+      <tr>
+      <th class = "delete">Удалить</th>
+      <th>Имя</th>
+      <th>Фамилия</th>
+      <th>Телефон</th>
+      </tr>
+    `);
     const tbody = document.createElement('tbody');
     table.append(thead, tbody);
     table.tbody = tbody;
@@ -104,20 +81,20 @@ const data1 = [
     const form = document.createElement('form');
     form.classList.add('form');
     form.insertAdjacentHTML('beforeend', `
-    <button class="close" type="button"></button>
-    <h2 class="form-title">Добавить контакт</h2>
-    <div class="form-group">
-    <label class="form-label" for="name">Имя:</label>
-    <input class="form-input" name="name" id="name" type="text" required> 
-    </div>
-    <div class="form-group">
-    <label class="form-label" for="surname">Фамилия:</label>
-    <input class="form-input" name="surname" id="surname" type="text" required> 
-    </div>
-    <div class="form-group">
-    <label class="form-label" for="phone">Телефон:</label>
-    <input class="form-input" name="phone" id="phone" type="number" required> 
-    </div>
+      <button class="close" type="button"></button>
+      <h2 class="form-title">Добавить контакт</h2>
+      <div class="form-group">
+      <label class="form-label" for="name">Имя:</label>
+      <input class="form-input" name="name" id="name" type="text" required> 
+      </div>
+      <div class="form-group">
+      <label class="form-label" for="surname">Фамилия:</label>
+      <input class="form-input" name="surname" id="surname" type="text" required> 
+      </div>
+      <div class="form-group">
+      <label class="form-label" for="phone">Телефон:</label>
+      <input class="form-input" name="phone" id="phone" type="number" required> 
+      </div>
     `);
 
     const buttonGroup = createButtonsGroup([{
@@ -258,7 +235,7 @@ const data1 = [
     };
   };
 
-  const deleteControl = (btnDel, list) => {
+  const deleteControl = (btnDel, list, title) => {
     btnDel.addEventListener('click', () => {
       document.querySelectorAll('.delete').forEach(del => {
         del.classList.toggle('is-visible');
@@ -269,7 +246,7 @@ const data1 = [
       if (e.target.closest('.del-icon')) {
         e.target.closest('.contact').remove();
 
-        removeStorage(e.target.closest('.contact').children[3].textContent);
+        removeStorage(e.target.closest('.contact').children[3].textContent, title);
       }
     });
   };
@@ -278,14 +255,13 @@ const data1 = [
     list.append(createRow(contact));
   };
 
-  const formControl = (form, list, closeModal) => {
+  const formControl = (title, form, list, closeModal) => {
     form.addEventListener('submit', e => {
       e.preventDefault();
       const formData = new FormData(e.target);
       const newContact = Object.fromEntries(formData);
 
-      const {name: firstName, surname, phone} = newContact;
-      setStorage(phone, newContact);
+      setStorage(title, newContact);
       addContactPage(newContact, list);
       // addContactData(newContact);
       form.reset();
@@ -295,30 +271,30 @@ const data1 = [
 
 
   const getStorage = (key) => {
-    data.push(JSON.parse(localStorage.getItem(key)));
+    let data = [];
+    if (JSON.parse(localStorage.getItem(key)) != null) {
+      data = JSON.parse(localStorage.getItem(key));
+    }
     return data;
   };
 
 
   const setStorage = (key, contact) => {
-    localStorage.setItem(key, JSON.stringify(contact));
-  };
-  const setOldData = () => {
-    for (const element of data1) {
-      const {name: firstName, surname, phone} = element;
-      setStorage(phone, element);
-    }
-  };
-  const getOldData = () => {
-    const keys = Object.keys(localStorage);
-    for (const key of keys) {
-      data = getStorage(key);
-    }
-    return data;
+    const data = getStorage(key);
+    data.push(contact);
+    localStorage.setItem(key, JSON.stringify(data));
   };
 
-  const removeStorage = (key) => {
-    localStorage.removeItem(key);
+  const removeStorage = (key, title) => {
+    const contacts = getStorage(title);
+    for (let index = 0; index < contacts.length; index++) {
+      const {name: firstName, surname, phone} = contacts[index];
+      if (phone === key) {
+        contacts.splice(index, 1);
+      }
+    }
+
+    localStorage.setItem(title, JSON.stringify(contacts));
   };
   const init = (selectorApp, title) => {
     const app = document.querySelector(selectorApp);
@@ -331,13 +307,12 @@ const data1 = [
       btnDel,
     } = renederPhoneBook(app, title);
     // функционал
-    setOldData();
-    const allRow = renderContacts(list, getOldData());
+    const allRow = renderContacts(list, getStorage(title));
     const {closeModal} = modalControl(btnAdd, formOverlay);
     hoverRow(allRow, logo);
 
-    deleteControl(btnDel, list);
-    formControl(form, list, closeModal);
+    deleteControl(btnDel, list, title);
+    formControl(title, form, list, closeModal);
   };
 
   window.phoneBookInit = init;
