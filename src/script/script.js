@@ -1,3 +1,4 @@
+import '../scss/index.scss';
 import {renederPhoneBook, renderContacts} from './modules/render.js';
 import serviceStorage from './modules/serviceStorage.js';
 const {getStorage} = serviceStorage;
